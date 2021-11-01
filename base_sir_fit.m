@@ -2,16 +2,17 @@
 % Here is an example that reads in infection and fatalities from STL City
 % and loads them into a new matrix covidstlcity_full
 % In addition to this, you have other matrices for the other two regions in question
+% Load the data
 load("COVIDdata.mat");
 % covidstlcity_full = double(table2array(COVID_STLcity(:,[5:6])))./300000;
 
 
 
-coviddata = COVID_MO; % TO SPECIFY
-time = coviddata(coviddata{:, 5} == 2, 1); % TO SPECIFY
-t = datenum(time{size(time, 1), 1}-time{1, 1})+1;
+coviddata = COVID_MO; % Specify the data we are looking for 
+time = coviddata(coviddata{:, 5} == 2, 1); % Specify the time
+t = datenum(time{size(time, 1), 1}-time{1, 1})+1; % Specify the t
 
-populationSTL=populations_MO{2, 2};
+populationSTL=populations_MO{2, 2}; % Looking for the MO population
 
 % The following line creates an 'anonymous' function that will return the cost (i.e., the model fitting error) given a set
 % of parameters.  There are some technical reasons for setting this up in this way.
