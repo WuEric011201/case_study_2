@@ -63,3 +63,8 @@ figure(1);
 
 % Make some plots that illustrate your findings.
 % TO ADD
+hold on;
+plot(Y_fit(:, 1));
+plot(Y_fit(:, 2));
+plot(Y_fit(:, 3));
+plot(Y_fit(:, 4));
