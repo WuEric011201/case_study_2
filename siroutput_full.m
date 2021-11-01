@@ -11,7 +11,9 @@ function f = siroutput_full(x,t)
 k_infections = x(1);
 k_fatality = x(2);
 k_recover = x(3);
-% k_recover_toS = x(4);
+
+%k_recover_toS = x(4);
+
 
 % set up initial conditions
 ic_susc = x(4);
@@ -20,10 +22,17 @@ ic_rec = x(6);
 ic_fatality = x(7);
 
 % Set up SIRD within-population transmission matrix
-A = [(1-k_infections)   0          0 0; 
-        k_infections        (1-k_recover-k_fatality)           0 0;
-        0                   k_recover   1 0;
-        0                   k_fatality   0 1];
+
+% A = [(1-k_infections)   k_recover_toS           0 0; 
+%         k_infections        (1-k_recover_toS-k_recover-k_fatality)           0 0;
+%         0                   k_recover   1 0;
+%         0                   k_fatality   0 1];
+
+A= [ (1-k_infections) 0 0 0; 
+    k_infections (1-k_recover-k_fatality) 0 0;
+    0 k_recover 1 0;
+    0 k_fatality 0 1;];
+
 
 % The next line creates a zero vector that will be used a few steps.
 B = zeros(4,1);
