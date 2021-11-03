@@ -13,6 +13,9 @@ t = datenum(time{size(time, 1), 1}-time{1, 1})+1;
 
 populationSTL=populations_MO{2, 2};
 
+stl = coviddata(coviddata{:, 5} == 2, :);
+percentSTL = stl{:, [3, 4]}/populationSTL;
+
 % The following line creates an 'anonymous' function that will return the cost (i.e., the model fitting error) given a set
 % of parameters.  There are some technical reasons for setting this up in this way.
 % Feel free to peruse the MATLAB help at
@@ -20,7 +23,8 @@ populationSTL=populations_MO{2, 2};
 % and see the sectiono on 'passing extra arguments'
 % Basically, 'sirafun' is being set as the function siroutput (which you
 % will be designing) but with t and coviddata specified.
-sirafun= @(x)siroutput(x,t,coviddata);
+%sirafun= @(x)siroutput(x,t,coviddata);
+sirafun= @(x)siroutput(x,t,percentSTL);
 
 %% set up rate and initial condition constraints
 % Set A and b to impose a parameter inequality constraint of the form A*x < b
@@ -46,7 +50,8 @@ ub = []';
 lb = []';
 
 % Specify some initial parameters for the optimizer to start from
-x0 = [0 0 0 populationSTL 0 0 0]; 
+%x0 = [0 0 0 populationSTL 0 0 0]; 
+x0 = [0 0 0 1 0 0 0]; 
 
 % This is the key line that tries to opimize your model parameters in order to
 % fit the data
@@ -63,8 +68,13 @@ figure(1);
 
 % Make some plots that illustrate your findings.
 % TO ADD
+figure;
 hold on;
-plot(Y_fit(:, 1));
-plot(Y_fit(:, 2));
-plot(Y_fit(:, 3));
+
 plot(Y_fit(:, 4));
+plot(percentSTL(:, 2));
+
+%plot(Y_fit(:, 1));
+%plot(Y_fit(:, 2));
+%plot(Y_fit(:, 3));
+%plot(Y_fit(:, 4));
