@@ -42,6 +42,8 @@ y = lsim(sys_sir_base,zeros(t,1),linspace(0,t-1,t),x0);
 population = 1-data(:, 2);
 casesModel = y(:, 2) + y(:, 3) + y(:, 4);
 
+%1: Suscpetible, 2: infected, 3: recovered, 4: dead
+
 % f =sum( (population-y(:, 1)).^2+ (casesModel-stl{:, 3}).^2 +(stl{:, 4}-y(:, 2)).^2);
-f =sum( (population-y(:, 1)).^2+ (casesModel-data(:, 1)).^2 +(data(:, 2)-y(:, 2)).^2);
+f =sum( (population-y(:, 1)-y(:, 2)-y(:, 3)).^2+ (casesModel-data(:, 1)).^2 +(data(:, 2)-y(:, 2)).^2);
 end

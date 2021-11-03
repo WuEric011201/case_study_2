@@ -38,8 +38,8 @@ b = [];
 % Hint: For example, the sum of the initial conditions should be
 % constrained
 % If you don't want such a constraint, keep these matrices empty.
-Af = [];
-bf = [];
+Af = [0 0 0 1 0 0 0; 0 0 0 0 1 0 0; 0 0 0 0 0 1 0; 0 0 0 0 0 0 1];
+bf = [1; 0; 0; 0;];
 
 %% set up upper and lower bound constraints
 % Set upper and lower bounds on the parameters
