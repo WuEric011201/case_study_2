@@ -24,7 +24,7 @@ percentSTL = stl{:, [3, 4]}/populationSTL;
 % Basically, 'sirafun' is being set as the function siroutput (which you
 % will be designing) but with t and coviddata specified.
 %sirafun= @(x)siroutput(x,t,coviddata);
-sirafun= @(x)siroutput(x,t,percentSTL);
+sirafun= @(x)sliroutput(x,t,percentSTL);
 
 %% set up rate and initial condition constraints
 % Set A and b to impose a parameter inequality constraint of the form A*x < b
@@ -38,20 +38,25 @@ b = [];
 % Hint: For example, the sum of the initial conditions should be
 % constrained
 % If you don't want such a constraint, keep these matrices empty.
-Af = [1 1 1 1];
-bf = [1 1 1 1];
+Af = [0 0 0 0 0 0 0 1 0 0 0 0;
+      0 0 0 0 0 0 0 0 1 0 0 0;
+      0 0 0 0 0 0 0 0 0 1 0 0;
+      0 0 0 0 0 0 0 0 0 0 1 0;
+      0 0 0 0 0 0 0 0 0 0 0 1];
+  
+bf = [1; 0; 0; 0; 0;];
 
 %% set up upper and lower bound constraints
 % Set upper and lower bounds on the parameters
 % lb < x < ub
 % here, the inequality is imposed element-wise
 % If you don't want such a constraint, keep these matrices empty.
-ub = []';
-lb = []';
+ub = [1 1 1 1 1 1 1 1 1 1 1 1]';
+lb = [0 0 0 0 0 0 0 -1 -1 -1 -1 -1]';
 
 % Specify some initial parameters for the optimizer to start from
 %x0 = [0 0 0 populationSTL 0 0 0]; 
-x0 = [0; 0; 0; 1; 0 0 0]; 
+x0 = [0.1 0.1 0.1 0.1 0.1 0.1 0.1 1 0 0 0 0]; 
 
 % This is the key line that tries to opimize your model parameters in order to
 % fit the data
@@ -62,17 +67,23 @@ x = fmincon(sirafun,x0,A,b,Af,bf,lb,ub)
 % legend('S','L','I','R','D');
 % xlabel('Time')
 
-Y_fit = siroutput_full(x,t);
+Y_fit = sliroutput_full(x,t);
 
-figure(1);
+%figure(1);
 
 % Make some plots that illustrate your findings.
 % TO ADD
 figure;
 hold on;
 
-plot(Y_fit(:, 4));
+plot(Y_fit(:, 3) + Y_fit(:, 4)+Y_fit(:, 5));
+plot(percentSTL(:, 1));
+plot(Y_fit(:, 5));
 plot(percentSTL(:, 2));
+title("Cases and deaths");
+legend("Model Infected", "Real Infected", "Model Deaths", "Real Dead");
+xlabel("Time");
+ylabel("Percent of population");
 
 %plot(Y_fit(:, 1));
 %plot(Y_fit(:, 2));

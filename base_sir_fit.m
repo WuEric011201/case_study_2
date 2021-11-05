@@ -64,15 +64,21 @@ x = fmincon(sirafun,x0,A,b,Af,bf,lb,ub)
 
 Y_fit = siroutput_full(x,t);
 
-figure(1);
+%figure(1);
 
 % Make some plots that illustrate your findings.
 % TO ADD
 figure;
 hold on;
 
+plot(Y_fit(:, 2) + Y_fit(:, 3)+Y_fit(:, 4));
+plot(percentSTL(:, 1));
 plot(Y_fit(:, 4));
 plot(percentSTL(:, 2));
+title("Cases and deaths");
+legend("Model Infected", "Real Infected", "Model Deaths", "Real Dead");
+xlabel("Time");
+ylabel("Percent of population");
 
 %plot(Y_fit(:, 1));
 %plot(Y_fit(:, 2));
