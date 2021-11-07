@@ -6,26 +6,29 @@
 function f = sliroutput(x,t,data)
 
 % set up transmission constants
+
 k_infections = x(1);
 k_fatality = x(2);
 k_recover = x(3);
 k_lockdown = x(4);
-k_vaccine = x(5);
-k_lockinfections = x(6);
-k_lockvaccine=x(7);
+k_outlockdown=x(5);
+k_vaccine = x(6);
+k_lockinfections = x(7);
+k_lockvaccine=x(8);
 
 % set up initial conditions
-ic_susc = x(8);
-ic_lockdown = x(9);
-ic_inf = x(10);
-ic_rec = x(11);
-ic_fatality = x(12);
+ic_susc = x(9);
+ic_lockdown = x(10);
+ic_inf = x(11);
+ic_rec = x(12);
+ic_fatality = x(13);
+
 
 susceptible = 1-k_lockdown-k_infections-k_vaccine;
-quarantine = 1-k_lockinfections-k_lockvaccine;
-
+quarantine = 1-k_lockinfections-k_lockvaccine-k_outlockdown;
 % Set up SIRD within-population transmission matrix
-A = [ susceptible    0                 0                        0 0; 
+
+A = [ susceptible    k_outlockdown                 0            0 0; 
         k_lockdown   quarantine        0                        0 0;
         k_infections k_lockinfections  (1-k_recover-k_fatality) 0 0;
         k_vaccine    k_lockvaccine     k_recover                1 0;
@@ -57,5 +60,5 @@ casesModel = y(:, 3) + y(:, 4) + y(:, 5);
 % f =sum( (population-y(:, 1)).^2+ (casesModel-stl{:, 3}).^2 +(stl{:, 4}-y(:, 2)).^2);
 % Population , infected, deaths
 % +(population-y(:, 1)-y(:, 2)).^2
-f =sum( (casesModel-data(:, 1)).^2 + (data(:, 2)- y(:, 5)).^2 );
+f =sum( (casesModel-data(:, 1)).^2 + (data(:, 2)- y(:, 5)).^2);
 end

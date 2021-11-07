@@ -30,19 +30,19 @@ sirafun= @(x)sliroutput(x,t,percentSTL);
 % Set A and b to impose a parameter inequality constraint of the form A*x < b
 % Note that this is imposed element-wise
 % If you don't want such a constraint, keep these matrices empty.
-A = [];
-b = [];
+A = [0 0 0 0 1 0 1 1 0 0 0 0 0; 1 0 0 1 0 1 0 0 0 0 0 0 0];
+b = [1; 1];
 
 %% set up some fixed constraints
 % Set Af and bf to impose a parameter constraint of the form Af*x = bf
 % Hint: For example, the sum of the initial conditions should be
 % constrained
 % If you don't want such a constraint, keep these matrices empty.
-Af = [0 0 0 0 0 0 0 1 0 0 0 0;
-      0 0 0 0 0 0 0 0 1 0 0 0;
-      0 0 0 0 0 0 0 0 0 1 0 0;
-      0 0 0 0 0 0 0 0 0 0 1 0;
-      0 0 0 0 0 0 0 0 0 0 0 1];
+Af = [0 0 0 0 0 0 0 0 1 0 0 0 0;
+      0 0 0 0 0 0 0 0 0 1 0 0 0;
+      0 0 0 0 0 0 0 0 0 0 1 0 0;
+      0 0 0 0 0 0 0 0 0 0 0 1 0;
+      0 0 0 0 0 0 0 0 0 0 0 0 1];
   
 bf = [1; 0; 0; 0; 0;];
 
@@ -51,12 +51,12 @@ bf = [1; 0; 0; 0; 0;];
 % lb < x < ub
 % here, the inequality is imposed element-wise
 % If you don't want such a constraint, keep these matrices empty.
-ub = [1 1 1 1 1 1 1 1 1 1 1 1]';
-lb = [0 0 0 0 0 0 0 -1 -1 -1 -1 -1]';
+ub = [1 0.1 1 0.3 1 1 0.1 1 1 1 1 1 1]'; %outlockdown is a funky one
+lb = [0.1 0 0 0 0.01 0 0 0 -1 -1 -1 -1 -1]';
 
 % Specify some initial parameters for the optimizer to start from
 %x0 = [0 0 0 populationSTL 0 0 0]; 
-x0 = [0.1 0.1 0.1 0.1 0.1 0.1 0.1 1 0 0 0 0]; 
+x0 = [0.11 0.1 0.1 0.1 0.1 0.1 0.1 0.1 1 0 0 0 0]; 
 
 % This is the key line that tries to opimize your model parameters in order to
 % fit the data
@@ -69,7 +69,7 @@ x = fmincon(sirafun,x0,A,b,Af,bf,lb,ub)
 
 Y_fit = sliroutput_full(x,t);
 
-%figure(1);
+figure(1);
 
 % Make some plots that illustrate your findings.
 % TO ADD
@@ -84,6 +84,15 @@ title("Cases and deaths");
 legend("Model Infected", "Real Infected", "Model Deaths", "Real Dead");
 xlabel("Time");
 ylabel("Percent of population");
+
+figure;
+hold on;
+plot(Y_fit(:, 1));
+plot(Y_fit(:, 2));
+plot(Y_fit(:, 3));
+plot(Y_fit(:, 4));
+plot(Y_fit(:, 5));
+legend("Susceptible", "lockdown", "infected", "recovered", "dead");
 
 %plot(Y_fit(:, 1));
 %plot(Y_fit(:, 2));
