@@ -51,7 +51,7 @@ bf = [1; 0; 0; 0; 0;];
 % lb < x < ub
 % here, the inequality is imposed element-wise
 % If you don't want such a constraint, keep these matrices empty.
-ub = [1 0.1 1 0.3 1 1 0.1 1 1 1 1 1 1]'; %outlockdown is a funky one
+ub = [1 0.1 1 0.3 1 0.05 0.1 0.1 1 1 1 1 1]'; %outlockdown is a funky one
 lb = [0.1 0 0 0 0.01 0 0 0 -1 -1 -1 -1 -1]';
 
 % Specify some initial parameters for the optimizer to start from
@@ -76,7 +76,7 @@ figure(1);
 figure;
 hold on;
 
-plot(Y_fit(:, 3) + Y_fit(:, 4)+Y_fit(:, 5));
+plot(Y_fit(:, 3) + Y_fit(:, 5));
 plot(percentSTL(:, 1));
 plot(Y_fit(:, 5));
 plot(percentSTL(:, 2));
