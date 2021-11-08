@@ -63,16 +63,25 @@ x =  fmincon(sirafun,x0,A,b,Af,bf,lb,ub);
 Y_fit = sliroutput_full(x,t);
 
 % set up the modified case
-sirafun_policy= @(x)sliroutput_policy(x,t,Y_fit);
-x_policy = fmincon(sirafun_policy,x0,A,b,Af,bf,lb,ub);
-Y_fit_policy = sliroutput_full_policy(x_policy,t);
+Y_fit_policy = sliroutput_full_policy(x, t);
+
+% return a "cost"
+averagei = mean(Y_fit(:, 3)); % Caculate the average of infection rate
+averagei_policy = mean(Y_fit_policy(:, 3));
+averaged = mean(Y_fit(:,5)); % Calculate the average of fatality rate
+averaged_policy  = mean(Y_fit_policy(:,5)); 
+J_benefit = 10*norm(Y_fit(: , 3)-Y_fit_policy(: , 3))+10*norm(Y_fit(:, 5)-Y_fit_policy(:, 5));
+J_cost = 100* (norm(Y_fit(: , 2)-Y_fit_policy(:,2))).^2 + 800*(1 - averagei_policy/averagei)*(norm(Y_fit(: , 3)-Y_fit_policy(: , 3))).^2 ...
+    + 800*(1 - averaged_policy/averaged)* (norm( Y_fit(: , 5)-Y_fit_policy(: , 5) ) ).^2;
+a = 1; % define alpha 
+J_relative = J_benefit - a* J_cost  % compute the final j
 
 % Make first plot for comparison
 figure;
 hold on;
-plot(Y_fit(:, 3) + Y_fit(:, 5));
+plot(Y_fit(:, 3) + Y_fit(:, 5),'--o');
 plot(Y_fit_policy(:, 3) + Y_fit_policy(:, 5));
-plot(Y_fit(:, 5));
+plot(Y_fit(:, 5), '--o');
 plot(Y_fit_policy(:, 5));
 hold off;
 title("Cases and deaths");

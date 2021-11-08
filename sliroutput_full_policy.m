@@ -34,7 +34,7 @@ model = [ susceptible    k_outlockdown                 0            0 0;
         k_vaccine    k_lockvaccine     k_recover                1 0;
         0            0                 k_fatality               0 1];
 
-B = zeros(5,1);
+% B = zeros(5,1);
 
 % Set up the vector of initial conditions
 x0 = [ic_susc, ic_lockdown, ic_inf, ic_rec, ic_fatality];
@@ -47,7 +47,7 @@ for i = 1: t-1
     y_policy(i+1, :) = next_state' ; % add another column to xt, ie x(t+1), that is model and x of current t
 end
 
-% sys_sir_base = ss(sirpolicy(A, x0),B,eye(5),zeros(5,1),1);
+% sys_sir_base = ss(sirpolicy(model, x0),B,eye(5),zeros(5,1),1);
 % y_policy = lsim(sys_sir_base,zeros(t,1),linspace(0,t-1,t),x0);
 % return the output of the simulation
 f = y_policy;

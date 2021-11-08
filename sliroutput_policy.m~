@@ -38,9 +38,9 @@ model = [ susceptible    k_outlockdown                 0            0 0;
 % Set up the vector of initial conditions
 x0 = [ic_susc, ic_lockdown, ic_inf, ic_rec, ic_fatality];
                     
-y_policy= zeros(t, 5); % initialize our y function
+y_policy= zeros(t, 5);
 y_policy(1, :) = x0;
-wobble_cost = zeros(t, 3); % initialize our wobble cost
+wobble_cost = zeros(t, 3);
 
 for i = 1: t-1
     model = sirpolicy(model, y_policy(i,:));
@@ -65,6 +65,6 @@ J_cost = 100* (norm(data(: , 2)-data(:,2))).^2 + 800*(1 - averagei_policy/averag
     + 800*(1 - averaged_policy/averaged)* (norm( data(: , 5)-y_policy(: , 5) ) ).^2;
 a = 1; % define alpha 
 wobble = max(std(wobble_cost));
-J_relative = J_benefit - a* J_cost - wobble % compute the final j
-f = -J_relative; % we want to minimize the cost, which is opposite of j
+J_relative = J_benefit - a* J_cost - wobble
+f = -J_relative;
 end
