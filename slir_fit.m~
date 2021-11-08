@@ -78,23 +78,16 @@ figure;
 hold on;
 plot(Y_fit(:, 3) + Y_fit(:, 5),'--o'); % Plot the base model cases
 plot(Y_fit_policy(:, 3) + Y_fit_policy(:, 5)); % Plot the modified model cases
-hold off;
-legend("Base model Infected", "Controlled model Infected");
-xlabel("Time");
-ylabel("Percent of population");
-title('Comparing the cases of the base model and the modified model');
-
-figure;
-hold on;
 plot(Y_fit(:, 5), '--o'); % Plot the base model death 
-plot(Y_fit_policy(:, 5)); % Plot the modified model death
+plot(Y_fit_policy(:, 5));
 hold off;
-legend("Base model Deaths", "Controlled model Deaths");
+title("Cases and deaths");
+legend("Base model Infected", "Controlled model Infected", "Base model Deaths", "Controlled model Deaths");
 xlabel("Time");
 ylabel("Percent of population");
-title('Comparing the death of the base model and the modified model');
+title('Comparing the base model and the modified model');
 
-% Plot for the projected modified case after applying policy
+% Make second plot for graphing the projected policy covid situation
 figure;
 hold on;
 plot(Y_fit_policy(:, 1));
@@ -108,7 +101,6 @@ xlabel("Time");
 ylabel("Percent of population");
 title('Plotting different parameters within the modified model ');
 
-% Plot for the projected base case after applying policy
 figure;
 hold on;
 plot(Y_fit(:, 1));

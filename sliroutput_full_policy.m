@@ -34,7 +34,6 @@ model = [ susceptible    k_outlockdown                 0            0 0;
         k_vaccine    k_lockvaccine     k_recover                1 0;
         0            0                 k_fatality               0 1];
 
-% B = zeros(5,1);
 
 % Set up the vector of initial conditions
 x0 = [ic_susc, ic_lockdown, ic_inf, ic_rec, ic_fatality];
