@@ -28,11 +28,11 @@ susceptible = 1-k_lockdown-k_infections-k_vaccine;
 quarantine = 1-k_lockinfections-k_lockvaccine-k_outlockdown;
 % Set up SIRD within-population transmission matrix
 
-A = [ susceptible    k_outlockdown                 0            0 0; 
+model = [ susceptible    k_outlockdown                 0            0 0; 
         k_lockdown   quarantine        0                        0 0;
         k_infections k_lockinfections  (1-k_recover-k_fatality) 0 0;
         k_vaccine    k_lockvaccine     k_recover                1 0;
-        0            0                 k_fatality               0 1]
+        0            0                 k_fatality               0 1];
 
 B = zeros(5,1);
 
@@ -42,7 +42,7 @@ x0 = [ic_susc, ic_lockdown, ic_inf, ic_rec, ic_fatality];
 y_policy= zeros(t, 5);
 y_policy(1, :) = x0;
 for i = 1: t-1
-    model = sirpolicy(A, y_policy(i,:));
+    model = sirpolicy(model, y_policy(i,:));
     next_state = model * y_policy(i, :)' ;
     y_policy(i+1, :) = next_state' ; % add another column to xt, ie x(t+1), that is model and x of current t
 end

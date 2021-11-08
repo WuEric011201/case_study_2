@@ -25,8 +25,7 @@ percentSTL = stl{startin(1,1):endin(1,1), [3, 4]}/populationSTL;
 % Basically, 'sirafun' is being set as the function siroutput (which you
 % will be designing) but with t and coviddata specified.
 %sirafun= @(x)siroutput(x,t,coviddata);
-sirafun_policy= @(x)sliroutput_policy(x,t,percentSTL);
-sirafun = @(x)sliroutput(x,t,percentSTL);
+
 %% set up rate and initial condition constraints
 % Set A and b to impose a parameter inequality constraint of the form A*x < b
 % Note that this is imposed element-wise
@@ -58,25 +57,31 @@ lb = [0.1 0 0 0 0.01 0 0 0 -1 -1 -1 -1 -1]';
 % Specify some initial parameters for the optimizer to start from
 x0 = [0.11 0.1 0.1 0.1 0.1 0.1 0.1 0.1 1 0 0 0 0]; 
 
-% set up the fmincon for the base and modified case
-x_policy = fmincon(sirafun_policy,x0,A,b,Af,bf,lb,ub);
+% Set up the base case
+sirafun = @(x)sliroutput(x,t,percentSTL);
 x =  fmincon(sirafun,x0,A,b,Af,bf,lb,ub);
-
-Y_fit_policy = sliroutput_full_policy(x_policy,t);
 Y_fit = sliroutput_full(x,t);
-% Make some plots that illustrate  findings.
+
+% set up the modified case
+sirafun_policy= @(x)sliroutput_policy(x,t,Y_fit);
+x_policy = fmincon(sirafun_policy,x0,A,b,Af,bf,lb,ub);
+Y_fit_policy = sliroutput_full_policy(x_policy,t);
+
+% Make first plot for comparison
 figure;
 hold on;
-
 plot(Y_fit(:, 3) + Y_fit(:, 5));
 plot(Y_fit_policy(:, 3) + Y_fit_policy(:, 5));
 plot(Y_fit(:, 5));
 plot(Y_fit_policy(:, 5));
+hold off;
 title("Cases and deaths");
 legend("Base model Infected", "Controlled model Infected", "Base model Deaths", "Controlled model Deaths");
 xlabel("Time");
 ylabel("Percent of population");
+title('Comparing the base model and the modified model');
 
+% Make second plot for graphing the projected policy covid situation
 figure;
 hold on;
 plot(Y_fit_policy(:, 1));
@@ -84,7 +89,11 @@ plot(Y_fit_policy(:, 2));
 plot(Y_fit_policy(:, 3));
 plot(Y_fit_policy(:, 4));
 plot(Y_fit_policy(:, 5));
+hold off;
 legend("Susceptible", "lockdown", "infected", "recovered", "dead");
+xlabel("Time");
+ylabel("Percent of population");
+title('Plotting different parameters within the modified model ');
 
 figure;
 hold on;
@@ -94,4 +103,7 @@ plot(Y_fit(:, 3));
 plot(Y_fit(:, 4));
 plot(Y_fit(:, 5));
 legend("Susceptible", "lockdown", "infected", "recovered", "dead");
+xlabel("Time");
+ylabel("Percent of population");
+title('Plotting different parameters within the base model ');
 
