@@ -2,11 +2,9 @@
 % x - a set of parameters
 % t - the number of time-steps you wish to simulate
 
-function f = sliroutput_full_policy(x,t)
+function [f, wobble_val] = sliroutput_full_policy(x,t)
 
-% Here is a suggested framework for x.  However, you are free to deviate
-% from this if you wish.
-
+% define each entry for x
 k_infections = x(1);
 k_fatality = x(2);
 k_recover = x(3);
@@ -26,8 +24,8 @@ ic_fatality = x(13);
 
 susceptible = 1-k_lockdown-k_infections-k_vaccine;
 quarantine = 1-k_lockinfections-k_lockvaccine-k_outlockdown;
-% Set up SIRD within-population transmission matrix
 
+% Set up SIRD within-population transmission matrix
 model = [ susceptible    k_outlockdown                 0            0 0; 
         k_lockdown   quarantine        0                        0 0;
         k_infections k_lockinfections  (1-k_recover-k_fatality) 0 0;
@@ -38,16 +36,21 @@ model = [ susceptible    k_outlockdown                 0            0 0;
 % Set up the vector of initial conditions
 x0 = [ic_susc, ic_lockdown, ic_inf, ic_rec, ic_fatality];
 
-y_policy= zeros(t, 5);
+y_policy= zeros(t, 5); % Initialize the y_policy
 y_policy(1, :) = x0;
+wobble = zeros(t, 4); % Initialize wobble
+% into lockdown rate, vaccine rate, lock vaccination rate and outlock rate
+wobble(1, :) = [model(2, 1), model(4,1), model(4, 2), model(1, 2)]; 
 for i = 1: t-1
     model = sirpolicy(model, y_policy(i,:));
+    % Add the possible modified data in the next iteration
+    wobble(i+1, :) = [model(2, 1), model(4,1), model(4, 2), model(1, 2)]; 
     next_state = model * y_policy(i, :)' ;
-    y_policy(i+1, :) = next_state' ; % add another column to xt, ie x(t+1), that is model and x of current t
+    y_policy(i+1, :) = next_state' ; % add another row
 end
+% Return the wobble value
+wobble_val = max(std(wobble));
 
-% sys_sir_base = ss(sirpolicy(model, x0),B,eye(5),zeros(5,1),1);
-% y_policy = lsim(sys_sir_base,zeros(t,1),linspace(0,t-1,t),x0);
 % return the output of the simulation
 f = y_policy;
 

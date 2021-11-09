@@ -13,6 +13,7 @@ stl = coviddata(coviddata{:, 5} == 2, :); % Specify we are looking are St. Louis
 startin = find(stl{:, 1} == '2021-01-01'); 
 endin = find(stl{:, 1} == '2021-10-01');
 t =  endin(1,1)-startin(1,1) +1; % Length of t
+
 % Find the real cases and death in this time frame
 percentSTL = stl{startin(1,1):endin(1,1), [3, 4]}/populationSTL;
 
@@ -41,15 +42,16 @@ lb = [0.1 0 0 0 0.01 0 0 0 -1 -1 -1 -1 -1]';
 % Specify some initial parameters for the optimizer to start from
 x0 = [0.11 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1025 0.4445 0.0241 0.4201 0.0088]; 
 
+%% compute the cost function 
 % Set up the base case
 sirafun = @(x)sliroutput(x,t,percentSTL);
 x =  fmincon(sirafun,x0,A,b,Af,bf,lb,ub);
 Y_fit = sliroutput_full(x,t);
 
 % set up the modified case based on the base case
-Y_fit_policy = sliroutput_full_policy(x, t);
+[Y_fit_policy, wobble] = sliroutput_full_policy(x, t);
 
-% return a "cost"
+
 averagei = mean(Y_fit(:, 3)); % Caculate the average of infection rate
 averagei_policy = mean(Y_fit_policy(:, 3));
 averaged = mean(Y_fit(:,5)); % Calculate the average of fatality rate
@@ -62,18 +64,18 @@ J_cost = 100* (norm(Y_fit(: , 2)-Y_fit_policy(:,2)))^2 + 800*(1 - averagei_polic
 J_relative = zeros(10, 1); % Initialize J_relative 
 i = 1;
 for a = 1: 1: 10 % alpha values range from 1 to 10
-    J_relative(i , 1) = J_benefit - a* J_cost;  % compute the final j
+    J_relative(i , 1) = J_benefit - a* J_cost-wobble;  % compute the final j
     i = i+1; 
 end
 
-% Make a plot for J values different values of a
+% Make a plot for J values different values of alpha
 figure;
 stem(J_relative);
 xlabel("alpha value");
 ylabel("J_relative valu");
 title('Comparing the J_relative value against different alpha values');
 
-% Make a plot for comparison
+% Make a plot for comparison for the cases
 figure;
 hold on;
 plot(Y_fit(:, 3) + Y_fit(:, 5),'--o'); % Plot the base model cases
@@ -84,6 +86,7 @@ xlabel("Time");
 ylabel("Percent of population");
 title('Comparing the cases of the base model and the modified model');
 
+% Plot for the death cases
 figure;
 hold on;
 plot(Y_fit(:, 5), '--o'); % Plot the base model death 
